@@ -30,7 +30,7 @@ export const MoreFromUser: FC<MoreFromUserProps> = ({ post }) => {
                             ) : (
                                 <>
                                     {data.posts.length > 1 ? (
-                                        <>{data.posts.map((p: any) => p._id !== post._id && <Post post={p} />)}</>
+                                        <>{data.posts.map((p: any) => p._id !== post._id && <Post key={p._id} post={p} />)}</>
                                     ) : (
                                         <div className="text-center py-12">
                                             <h3 className="font-semibold">There is no other post</h3>

@@ -5,7 +5,7 @@ import { CircularProgress } from '@mui/material';
 import useSWR from 'swr';
 import UserPageLayout from '../../layouts/UserPageLayout';
 import Post from '../../components/post/card/Post';
-import { useAuth } from '../../utils/auth';
+import { withAuth } from '../../utils/auth';
 import { http } from '../../services';
 
 const UserPage = ({ user, isMyPage }: any) => {
@@ -65,7 +65,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         };
     }
 
-    const { username } = useAuth(context);
+    const { username } = withAuth(context);
     return {
         props: {
             isMyPage: username === user.username,

@@ -14,7 +14,7 @@ import {
 import useSWR from 'swr';
 import { Container, Button, Sidebar } from '../../components/sidebar';
 import TextEditor from '../../components/editor';
-import { useAuth } from '../../utils/auth';
+import { withAuth } from '../../utils/auth';
 import { editPost } from '../../services/post/editPost';
 import SmallPost from '../../components/post/card/SmallPost';
 import { http } from '../../services';
@@ -80,6 +80,7 @@ export default function EditPost({ post }: any) {
                             split your tags with ',' charecter example: 'tag1, tag2, ...'
                         </p>
                         <TextField
+                            className='my-3'
                             fullWidth
                             placeholder="write post tags"
                             onChange={(e) => setTags(e.target.value)}
@@ -118,6 +119,7 @@ export default function EditPost({ post }: any) {
                                 <>
                                     {data.posts.map((p: any) => (
                                         <SmallPost
+                                            key={p._id}
                                             post={p}
                                             showUserInfo={false}
                                             showDeleteButton
@@ -145,7 +147,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const res = await fetch(`http://localhost:8000/posts/${context.params?.postId}`);
     const post = await res.json();
 
-    const { username } = useAuth(context);
+    const { username } = withAuth(context);
     if (!post || post.user.username !== username) {
         return {
             notFound: true,

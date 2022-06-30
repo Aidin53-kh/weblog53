@@ -12,7 +12,7 @@ import {
 import { CircularProgress, IconButton } from '@mui/material';
 import { isEmpty } from 'lodash';
 import { Container } from '../../components/sidebar';
-import { useAuth } from '../../utils/auth';
+import { withAuth } from '../../utils/auth';
 import { useAppContext } from '../../providers/AppProvider';
 import { MyPostDropdown, UserPostDropdown } from '../../components/post/dropdown';
 import { MoreFromUser } from '../../components/post/details/MoreFromUser';
@@ -150,7 +150,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (res.status !== 200) return { notFound: true };
 
     const post = await res.json();
-    const { username } = useAuth(context);
+    const { username } = withAuth(context);
     
     if (!post) return { notFound: true };
     if (!post.isPublic && username !== post.user.username) return { notFound: true };

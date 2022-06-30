@@ -16,7 +16,7 @@ import useSWR from 'swr';
 import TextEditor from '../../components/editor';
 import { Button, Container, Sidebar } from '../../components/sidebar';
 import SmallPost from '../../components/post/card/SmallPost';
-import { useAuth } from '../../utils/auth';
+import { withAuth } from '../../utils/auth';
 import { createPost } from '../../services/post/createPost';
 import { http } from '../../services';
 
@@ -110,7 +110,13 @@ export default function Write() {
                             {data ? (
                                 <>
                                     {data.posts.map((post: any) => (
-                                        <SmallPost post={post} showUserInfo={false} showEditButton showDeleteButton />
+                                        <SmallPost
+                                            key={post._id}
+                                            post={post}
+                                            showUserInfo={false}
+                                            showEditButton
+                                            showDeleteButton
+                                        />
                                     ))}
                                 </>
                             ) : (
@@ -129,7 +135,7 @@ export default function Write() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const { isAuthentcate, username } = useAuth(context);
+    const { isAuthentcate, username } = withAuth(context);
 
     if (!isAuthentcate) return { notFound: true };
 

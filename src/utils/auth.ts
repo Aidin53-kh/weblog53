@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext } from "next";
 import * as jwt from 'jsonwebtoken';
 
-export function useAuth(context: GetServerSidePropsContext) {
+export function withAuth(context: GetServerSidePropsContext) {
     const token = context.req.cookies['access_token'];
     let result = {
         isAuthentcate: false,

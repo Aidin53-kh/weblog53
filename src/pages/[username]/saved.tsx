@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { isEmpty } from 'lodash';
 import useSWR from 'swr';
 import UserPageLayout from '../../layouts/UserPageLayout';
-import { useAuth } from '../../utils/auth';
+import { withAuth } from '../../utils/auth';
 import { useAppContext } from '../../providers/AppProvider';
 import { http } from '../../services';
 import { UserTab } from '../../components/user/Tabs';
@@ -54,7 +54,7 @@ const Saved = () => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const { username } = useAuth(context);
+    const { username } = withAuth(context);
 
     if (username !== context.params?.username) {
         return {

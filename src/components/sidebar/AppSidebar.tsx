@@ -41,7 +41,7 @@ const AppSidebar: React.FC = () => {
                         <>
                             <List>
                                 {data.users.map(($user: any) => (
-                                    <Link href={`/${$user.username}`}>
+                                    <Link href={`/${$user.username}`} key={$user._id}>
                                         <a>
                                             <ListItem
                                                 key={$user._id}
