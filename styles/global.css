@@ -1,0 +1,36 @@
+@import './fonts.css';
+
+@tailwind base;
+@tailwind utilities;
+@tailwind components;
+
+* {
+    font-family: 'Source Sans Pro' !important;
+}
+
+.rtl {
+    direction: rtl !important;
+}
+
+.ltr {
+    direction: ltr !important;
+}
+
+.truncate2, .truncate3 {
+    display: -webkit-box !important;
+    overflow: hidden;
+    -webkit-box-orient: vertical !important;
+}
+
+.truncate2 {
+    -webkit-line-clamp: 2 !important;
+}
+
+.truncate3 {
+    -webkit-line-clamp: 3 !important;
+}
+
+svg {
+    width: 21px;
+    height: 21px;
+}
