@@ -19,13 +19,15 @@ const TextEditor: React.FC<TextEditorProps> = React.forwardRef((props, ref) => {
 
     const hanldeItalic = () => {
         setItalic(!italic);
-        ref.current?.focus();
+        // @ts-ignore: Object is possibly 'null'.
+        ref.current.focus();
         document.execCommand('Italic', false);
     };
 
     const handleBold = () => {
         setBold(!bold);
-        ref.current?.focus();
+        // @ts-ignore: Object is possibly 'null'.
+        ref.current.focus();
         document.execCommand('Bold', false);
     };
 
@@ -55,19 +57,24 @@ const TextEditor: React.FC<TextEditorProps> = React.forwardRef((props, ref) => {
     };
 
     useEffect(() => {
-        ref.current?.addEventListener('paste', (e: any) => {
+        // @ts-ignore: Object is possibly 'null'.
+        ref.current.addEventListener('paste', (e: any) => {
             e.preventDefault();
             var text = e.clipboardData.getData('text/plain');
             document.execCommand('insertText', false, text);
         });
 
-        ref.current?.addEventListener('keydown', (e: any) => {
+        // @ts-ignore: Object is possibly 'null'.
+        ref.current.addEventListener('keydown', (e: any) => {
             if (e.code === 'Enter') disableFormats();
             else setTimeout(() => syncFormats(), 10); // waite for change cammand state and then sync with format icons
         });
 
-        ref.current?.addEventListener('mouseup', syncFormats);
-        ref.current?.addEventListener('touchend', syncFormats);
+        // @ts-ignore: Object is possibly 'null'.
+        ref.current.addEventListener('mouseup', syncFormats);
+
+        // @ts-ignore: Object is possibly 'null'.
+        ref.current.addEventListener('touchend', syncFormats);
     }, []);
 
     const syncFormats = () => {
@@ -97,7 +104,8 @@ const TextEditor: React.FC<TextEditorProps> = React.forwardRef((props, ref) => {
                         checked={props.rtl}
                         onChange={(_, rtl) => {
                             props.onDirChange?.({ rtl });
-                            ref.current?.focus();
+                             // @ts-ignore: Object is possibly 'null'.
+                            ref.current.focus();
                         }}
                     />
                     <FormatItalic onClick={hanldeItalic} className={`text-gray-500 cursor-pointer ${italic && 'bg-green-100'}`} />
@@ -120,6 +128,7 @@ const TextEditor: React.FC<TextEditorProps> = React.forwardRef((props, ref) => {
                         id="createImage"
                         hidden
                         onChange={(e) => {
+                             // @ts-ignore: Object is possibly 'null'.
                             createImage(e.target.files[0]);
                         }}
                     />
