@@ -19,7 +19,7 @@ import { editPost } from '../../services/post/editPost';
 import SmallPost from '../../components/post/card/SmallPost';
 import { http } from '../../services';
 
-export default function EditPost({ post }: any) {
+const EditPost: React.FC = ({ post }: any) => {
     const router = useRouter();
     const { data, error } = useSWR(`/posts/private`, (url) => http.get(url).then((res) => res.data));
 
@@ -160,3 +160,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
     };
 };
+
+EditPost.displayName = "EditPost";
+
+export default EditPost;
