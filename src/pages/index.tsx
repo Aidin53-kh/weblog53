@@ -30,19 +30,19 @@ const Home: NextPage = () => {
                                             ))}
                                         </>
                                     ) : (
-                                        <div className="w-full h-screen text-center mt-44">
+                                        <div className="w-full text-center mt-44">
                                             <h1 className="text-2xl font-semibold">Not Post Found</h1>
                                         </div>
                                     )}
                                 </>
                             ) : (
-                                <div className="w-full h-screen text-center mt-44">
-                                    <CircularProgress />
+                                <div className="w-full text-center mt-44">
+                                    <CircularProgress size={24} />
                                 </div>
                             )}
                         </>
                     ) : (
-                        <div className="w-full h-screen text-center mt-44">
+                        <div className="w-full text-center mt-44">
                             <h2 className="text-2xl">faild to get posts</h2>
                         </div>
                     )}

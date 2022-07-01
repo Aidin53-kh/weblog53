@@ -1,12 +1,9 @@
 import { Button, TextField } from "@mui/material";
 import { Form, Formik } from "formik";
-import { useRouter } from "next/router";
 import { useAppContext } from "../../providers/AppProvider";
-import { http } from "../../services";
 import { loginSchema } from "./schema";
 
 const LoginForm = () => {
-    const router = useRouter();
     const { login } = useAppContext();
 
     return (

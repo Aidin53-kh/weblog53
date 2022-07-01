@@ -1,9 +1,7 @@
 import Link from 'next/link';
 import { Avatar, CircularProgress } from '@mui/material';
 import { isEmpty } from 'lodash';
-import { PostAddOutlined } from '@mui/icons-material';
 import { Bookmarks, HouseDoor, Gear, BoxArrowInLeft, BoxArrowRight, Pen } from 'react-bootstrap-icons';
-
 import { useAppContext } from '../../providers/AppProvider';
 import { Pages } from '../auth/types';
 
@@ -21,38 +19,38 @@ const Navbar = () => {
                 <div className="flex flex-col gap-10">
                     <Link href="/">
                         <a>
-                            <HouseDoor />
+                            <HouseDoor className='w-5 h-5' />
                         </a>
                     </Link>
                     {!isEmpty(user) ? (
                         <>
                             <Link href={`/${user.username}/saved`}>
                                 <a>
-                                    <Bookmarks />
+                                    <Bookmarks className='w-5 h-5' />
                                 </a>
                             </Link>
                             <Link href={`/${user.username}`}>
                                 <a>
-                                    <Gear />
+                                    <Gear className='w-5 h-5' />
                                 </a>
                             </Link>
                         </>
                     ) : (
                         <>
                             <div onClick={openLoginDialog}>
-                                <Bookmarks className="cursor-pointer" />
+                                <Bookmarks className="cursor-pointer w-5 h-5" />
                             </div>
                             <div onClick={openLoginDialog}>
-                                <Gear className="cursor-pointer" />
+                                <Gear className="cursor-pointer w-5 h-5" />
                             </div>
                             <div onClick={openLoginDialog}>
-                                <BoxArrowInLeft className="cursor-pointer w-[23px] h-[23px]" />
+                                <BoxArrowInLeft className="cursor-pointer w-5 h-5" />
                             </div>
                         </>
                     )}
                     {!isEmpty(user) && (
                         <div onClick={logout}>
-                            <BoxArrowRight />
+                            <BoxArrowRight className='w-5 h-5' />
                         </div>
                     )}
                 </div>
@@ -61,12 +59,12 @@ const Navbar = () => {
                     {!isEmpty(user) ? (
                         <Link href={`/write`}>
                             <a>
-                                <Pen />
+                                <Pen className='w-5 h-5' />
                             </a>
                         </Link>
                     ) : (
                         <div onClick={openLoginDialog}>
-                            <Pen className="cursor-pointer" />
+                            <Pen className="cursor-pointer w-5 h-5" />
                         </div>
                     )}
                 </div>

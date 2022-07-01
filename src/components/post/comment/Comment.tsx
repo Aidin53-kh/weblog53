@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { ChatBubbleOutlineRounded, MoreHoriz, ThumbDown, ThumbUp, ThumbUpAltOutlined } from '@mui/icons-material';
+import { ChatBubbleOutlineRounded, MoreHoriz, ThumbUp, ThumbUpAltOutlined } from '@mui/icons-material';
 import { Avatar, CircularProgress, IconButton } from '@mui/material';
-import faker from '@faker-js/faker';
 import { isEmpty } from 'lodash';
 import { IComment } from './types';
 import { useAppContext } from '../../../providers/AppProvider';
@@ -49,7 +48,7 @@ export const Comment: React.FC<CommnetProps> = ({
 
     const [isCommentLiked, setIsCommentLiked] = useState(false);
     const [likesCount, setLikesCount] = useState(comment.likes.length);
-    const [likeLoading, setLileLoading] = useState(false);        
+    const [likeLoading, setLileLoading] = useState(false);
 
     const getReplys = async () => {
         setFetchReplyLoading(true);
@@ -183,13 +182,7 @@ export const Comment: React.FC<CommnetProps> = ({
             />
             <header className="flex items-center justify-between gap-5">
                 <div className="flex items-center gap-2">
-                    <Avatar
-                        src={
-                            comment.user.avatar
-                                ? `http://localhost:8000/public/avatars/${comment.user.avatar}`
-                                : faker.image.avatar()
-                        }
-                    />
+                    <Avatar src={comment.user.avatar && `http://localhost:8000/public/avatars/${comment.user.avatar}`} />
                     <div>
                         <h4 className="text-sm">
                             {comment.user.username} {!isEmpty(user) && user._id === comment.user && `(my comment)`}

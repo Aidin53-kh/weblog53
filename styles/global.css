@@ -18,7 +18,7 @@
 
 .truncate2, .truncate3 {
     display: -webkit-box !important;
-    overflow: hidden;
+    overflow: hidden !important;
     -webkit-box-orient: vertical !important;
 }
 
@@ -28,9 +28,4 @@
 
 .truncate3 {
     -webkit-line-clamp: 3 !important;
-}
-
-svg {
-    width: 21px;
-    height: 21px;
 }
