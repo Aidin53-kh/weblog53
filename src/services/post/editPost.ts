@@ -7,7 +7,7 @@ type EditPostProps = {
     rtl: boolean;
     postId: string;
     postImages: {
-        [key: string]: File; // key is object URL as refrence from File
+        [key: string]: File; // key is object URL (blob) as refrence from File
     };
     isPublic: boolean;
 };
@@ -32,14 +32,14 @@ export const editPost = async ({ editor, tags, rtl, postId, postImages, isPublic
     });
 
     try {
-        const { data } = await http.post<SavePostImagesResponse>('/posts/savePostImages', formData);
+        const { data } = await http.post<SavePostImagesResponse>('/api/upload/postImages', formData);
 
         editor?.querySelectorAll('img').forEach((img, index) => {
             if (img.src.startsWith('blob:')) {
                 data.map((imageData) => {
                     if (index === 0) thumbnail = imageData.file;
                     if (img.src === imageData.ref) {
-                        img.src = `http://localhost:8000/public/posts/${imageData.file}`;
+                        img.src = `https://weblog53.netlify.app/uploads/post/${imageData.file}`;
                     }
                 });
             } else {
@@ -49,7 +49,7 @@ export const editPost = async ({ editor, tags, rtl, postId, postImages, isPublic
             }
         });
 
-        const { data: post } = await http.patch(`/posts/${postId}`, {
+        const { data: post } = await http.patch(`/api/posts/${postId}/edit`, {
             template: editor?.innerHTML,
             title,
             description,

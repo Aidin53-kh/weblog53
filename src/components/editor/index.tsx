@@ -42,16 +42,20 @@ const TextEditor: React.FC<TextEditorProps> = React.forwardRef((props, ref) => {
     const createHeader = (tagname: string, classes?: string) => {
         if (document.getSelection()?.toString()) {
             const text = document.getSelection()?.toString();
-            document.execCommand('insertHTML', true, `<${tagname} class='${classes || ''}'>${text}</${tagname}>`);
+            document.execCommand('insertHTML', false, `<${tagname} class='${classes || ''}'>${text}</${tagname}>`);
         } else {
-            document.execCommand('insertHTML', true, `<${tagname} class="${classes || ''}"><br/></${tagname}>`);
+            document.execCommand('insertHTML', false, `<${tagname} class="${classes || ''}"><br/></${tagname}>`);
         }
     };
 
     const createImage = (file: any) => {
         if (file) {
             const src = URL.createObjectURL(file);
-            document.execCommand('insertHTML', true, `<img src="${src}" alt="post"/><div><br/></div>`);
+            document.execCommand(
+                'insertHTML',
+                false,
+                `<div class='text-center overflow-hidden rounded-lg'><img src="${src}" alt="post"/></div><div><br/></div>`
+            );
             props.onUploadImage?.(file, src);
         }
     };
@@ -104,7 +108,7 @@ const TextEditor: React.FC<TextEditorProps> = React.forwardRef((props, ref) => {
                         checked={props.rtl}
                         onChange={(_, rtl) => {
                             props.onDirChange?.({ rtl });
-                             // @ts-ignore: Object is possibly 'null'.
+                            // @ts-ignore: Object is possibly 'null'.
                             ref.current.focus();
                         }}
                     />
@@ -120,7 +124,7 @@ const TextEditor: React.FC<TextEditorProps> = React.forwardRef((props, ref) => {
                         className={`text-gray-500 cursor-pointer`}
                     />
                     <label htmlFor="createImage">
-                        <Image className={`text-gray-500 cursor-pointer ${bold && 'bg-green-100'}`} />
+                        <Image className='text-gray-500 cursor-pointer' />
                     </label>
                     <input
                         type="file"
@@ -128,7 +132,7 @@ const TextEditor: React.FC<TextEditorProps> = React.forwardRef((props, ref) => {
                         id="createImage"
                         hidden
                         onChange={(e) => {
-                             // @ts-ignore: Object is possibly 'null'.
+                            // @ts-ignore: Object is possibly 'null'.
                             createImage(e.target.files[0]);
                         }}
                     />

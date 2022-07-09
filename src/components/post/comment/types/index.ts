@@ -9,5 +9,5 @@ export interface IComment {
     roll: 'Comment' | 'Reply';
     commentId: string | null;
     likes: string[];
-    _id: string;
+    id: string;
 }

@@ -4,11 +4,11 @@ import { useAppContext } from '../../providers/AppProvider';
 const Protected: React.FC = ({ children }) => {
     const context = useAppContext();
     
-    if (!context.isAuthenticate) {
-        return <Error statusCode={404} />
+    if (context.isAuthenticate) {
+        return <>{children}</>;
     }
     
-    return <>{children}</>;
+    return <Error statusCode={404} />
 };
 
 export default Protected;

@@ -13,7 +13,7 @@ const AppSidebar: React.FC = () => {
     const router = useRouter();
     const context = useAppContext();
 
-    const { data, error } = useSWR('/users/getTopUsers', (url) => http.get(url).then((res) => res.data));
+    const { data, error } = useSWR('/api/authors/top', (url) => http.get(url).then((res) => res.data));
 
     const hanldeSearch = (value: string) => {
         router.push({
@@ -40,18 +40,18 @@ const AppSidebar: React.FC = () => {
                     {data ? (
                         <>
                             <List>
-                                {data.users.map(($user: any) => (
-                                    <Link href={`/${$user.username}`} key={$user._id}>
+                                {data.authors.map(($user: any) => (
+                                    <Link href={`/${$user.username}`} key={$user.id}>
                                         <a>
                                             <ListItem
-                                                key={$user._id}
+                                                key={$user.id}
                                                 className={`px-2 py-1 mb-3 hover:bg-gray-100 rounded-full ${
                                                     context.user.username === $user.username && 'bg-blue-50'
                                                 }`}
                                             >
                                                 <ListItemAvatar>
                                                     {$user.avatar ? (
-                                                        <Avatar src={`http://localhost:8000/public/avatars/${$user.avatar}`} />
+                                                        <Avatar src={`https://weblog53.netlify.app/uploads/avatar/${$user.avatar}`} />
                                                     ) : (
                                                         <Avatar />
                                                     )}
@@ -75,8 +75,8 @@ const AppSidebar: React.FC = () => {
                     )}
                 </>
             ) : (
-                <div className="w-full h-screen text-center mt-44">
-                    <h2 className="text-2xl">faild to get users</h2>
+                <div className="w-full h-screen text-center mt-40">
+                    <h2 className="text-lg">faild to get users</h2>
                 </div>
             )}
 

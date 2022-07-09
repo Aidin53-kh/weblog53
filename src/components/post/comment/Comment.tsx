@@ -53,7 +53,7 @@ export const Comment: React.FC<CommnetProps> = ({
     const getReplys = async () => {
         setFetchReplyLoading(true);
         try {
-            const { data } = await http.get(`/comments/${postId}/${comment._id}`);
+            const { data } = await http.get(`/comments/${postId}/${comment.id}`);
             setReplys(data);
             setReplysCount(data.length);
             if (!data.length) setShowReplysSection(false);
@@ -83,7 +83,7 @@ export const Comment: React.FC<CommnetProps> = ({
     const addReply = async (template: string, rtl: boolean) => {
         setAddReplyLoading(true);
         try {
-            const { data } = await http.post(`/comments/${postId}/${comment._id}`, { template, rtl });
+            const { data } = await http.post(`/comments/${postId}/${comment.id}`, { template, rtl });
             setShowCommentEditor(false);
             getReplys();
         } catch (error) {
@@ -97,8 +97,8 @@ export const Comment: React.FC<CommnetProps> = ({
     const deleteComment = async () => {
         setDeleteCommentLoading(true);
         try {
-            const { data } = await http.delete(`/comments/${postId}/${comment._id}`);
-            setComments((comments) => comments.filter((comment) => comment._id !== data._id));
+            const { data } = await http.delete(`/comments/${postId}/${comment.id}`);
+            setComments((comments) => comments.filter((comment) => comment.id !== data.id));
             setCommentsCount((c) => c - 1);
         } catch (error: any) {
             console.log(error.response);
@@ -111,7 +111,7 @@ export const Comment: React.FC<CommnetProps> = ({
     const deleteReply = async () => {
         setDeleteCommentLoading(true);
         try {
-            const { status } = await http.delete(`/comments/${postId}/${comment.commentId}/${comment._id}`);
+            const { status } = await http.delete(`/comments/${postId}/${comment.commentId}/${comment.id}`);
             getCurrentScopReplys();
         } catch (error: any) {
             console.log(error.response);
@@ -124,12 +124,12 @@ export const Comment: React.FC<CommnetProps> = ({
     const editCommentOrReply = async (template: string, rtl: boolean) => {
         setEditCommentLoading(true);
         try {
-            const { data } = await http.patch(`/comments/${postId}/${comment._id}`, { template, rtl });
+            const { data } = await http.patch(`/comments/${postId}/${comment.id}`, { template, rtl });
             console.log('comment edited: ', data);
             if (data.roll === 'Comment') {
                 setComments((comments) => {
                     const commentsList = [...comments];
-                    const commentIndex = comments.findIndex((c) => c._id === data._id);
+                    const commentIndex = comments.findIndex((c) => c.id === data.id);
                     commentsList[commentIndex] = data;
                     return commentsList;
                 });
@@ -149,7 +149,7 @@ export const Comment: React.FC<CommnetProps> = ({
         if (isEmpty(user)) return openLoginAndRegisterDialog(Pages.LOGIN);
         setLileLoading(true);
         try {
-            const { data } = await http.post(`/comments/${comment._id}/like`);
+            const { data } = await http.post(`/comments/${comment.id}/like`);
             setIsCommentLiked(data.isCommentLiked);
             setLikesCount(data.likesCount);
         } catch (error: any) {
@@ -165,7 +165,7 @@ export const Comment: React.FC<CommnetProps> = ({
     }, [showReplysSection]);
 
     useEffect(() => {
-        if (comment.likes.includes(String(user._id))) setIsCommentLiked(true);
+        if (comment.likes.includes(String(user.id))) setIsCommentLiked(true);
         else setIsCommentLiked(false);
     }, [user]);
 
@@ -182,15 +182,15 @@ export const Comment: React.FC<CommnetProps> = ({
             />
             <header className="flex items-center justify-between gap-5">
                 <div className="flex items-center gap-2">
-                    <Avatar src={comment.user.avatar && `http://localhost:8000/public/avatars/${comment.user.avatar}`} />
+                    <Avatar src={comment.user.avatar && `https://weblog53.netlify.app/uploads/avatars/${comment.user.avatar}`} />
                     <div>
                         <h4 className="text-sm">
-                            {comment.user.username} {!isEmpty(user) && user._id === comment.user && `(my comment)`}
+                            {comment.user.username} {!isEmpty(user) && user.id === comment.user && `(my comment)`}
                         </h4>
                         <p className="text-gray-500 text-sm">{timeSince(comment.createdAt)}</p>
                     </div>
                 </div>
-                {!isEmpty(user) && user?._id === comment?.user?._id && (
+                {!isEmpty(user) && user?.id === comment?.user?.id && (
                     <IconButton onClick={(e) => setOpenCommentDropdown(e.target as HTMLElement)}>
                         <MoreHoriz />
                     </IconButton>
@@ -271,7 +271,7 @@ export const Comment: React.FC<CommnetProps> = ({
                                                 setCurrentScopComments={setReplys}
                                                 setCommentsCount={setCommentsCount}
                                                 setComments={setComments}
-                                                key={reply._id}
+                                                key={reply.id}
                                                 comment={reply}
                                                 postId={postId}
                                             />

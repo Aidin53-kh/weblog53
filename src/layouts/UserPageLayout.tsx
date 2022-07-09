@@ -1,11 +1,12 @@
 import { Fragment } from 'react';
 import { MoreHoriz } from '@mui/icons-material';
 import Container from '../components/container';
-import PageSidebar from '../components/sidebar/PageSidebar';
 import { UserPageTabs, UserTab } from '../components/user/Tabs';
+import { Prisma, User } from '@prisma/client';
+import PostSidebar from '../components/sidebar/PostSidebar';
 
 interface UserPageLayoutProps {
-    user: any;
+    user: User & { _count: Prisma.UserCountOutputType };
     activeTab?: UserTab;
     showTabs?: boolean;
     showHeader?: boolean;
@@ -29,7 +30,7 @@ const UserPageLayout: React.FC<UserPageLayoutProps> = ({ children, user, activeT
                 </Container>
             </div>
 
-            <PageSidebar user={user} />
+            <PostSidebar user={user} />
         </Fragment>
     );
 };

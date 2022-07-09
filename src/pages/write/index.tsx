@@ -8,21 +8,33 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    FormControl,
     FormControlLabel,
     TextField,
 } from '@mui/material';
-import useSWR from 'swr';
 import TextEditor from '../../components/editor';
 import { Button, Container, Sidebar } from '../../components/sidebar';
-import SmallPost from '../../components/post/card/SmallPost';
 import { withAuth } from '../../utils/auth';
 import { createPost } from '../../services/post/createPost';
+import useSWR from 'swr';
+import SmallPost from '../../components/post/card/SmallPost';
 import { http } from '../../services';
+import SidebarWriteAndEditPost from '../../components/sidebar/SidebarWriteAndEditPost';
 
-export default function Write() {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const { isAuthentcate, currentUser } = withAuth(context);
+
+    if (!isAuthentcate) return { notFound: true };
+
+    return {
+        props: {
+            currentUser,
+        },
+    };
+};
+
+export default function Write({ currentUser }: { currentUser: { username: string; id: string } }) {
     const router = useRouter();
-    const { data, error } = useSWR(`/posts/private`, (url) => http.get(url).then((res) => res.data));
+    const { data, error } = useSWR(`/api/posts/private`, (url) => http.get(url).then((res) => res.data));
 
     const [openPublishDialog, setOpenPublishDialog] = useState(false);
     const [rtl, setRtl] = useState(false);
@@ -38,13 +50,20 @@ export default function Write() {
     const handlePublish = async () => {
         setLoading('publishing');
         try {
-            const { error, post } = await createPost({ editor: editorRef?.current, tags, rtl, postImages, isPublic });
+            const { error, post } = await createPost({
+                editor: editorRef?.current,
+                tags,
+                rtl,
+                postImages,
+                isPublic,
+                authorId: currentUser.id,
+            });
             if (error) {
                 setLoading(false);
                 console.log(error);
             } else {
                 setLoading('redirecting');
-                router.push(`/posts/${post._id}`);
+                router.push(`/posts/${post.id}`);
                 console.log('POST CREATED: ', post);
             }
         } catch (error) {
@@ -99,49 +118,7 @@ export default function Write() {
                     </DialogActions>
                 </Dialog>
             </div>
-            <Sidebar className="py-6">
-                <Button fullWidth onClick={() => setOpenPublishDialog(true)}>
-                    publish
-                </Button>
-                <div>
-                    <h2 className="text-lg font-semibold pt-8 mb-6">Your Private Posts</h2>
-                    {!error ? (
-                        <>
-                            {data ? (
-                                <>
-                                    {data.posts.map((post: any) => (
-                                        <SmallPost
-                                            key={post._id}
-                                            post={post}
-                                            showUserInfo={false}
-                                            showEditButton
-                                            showDeleteButton
-                                        />
-                                    ))}
-                                </>
-                            ) : (
-                                <div className="text-center mt-12">
-                                    <CircularProgress size={20} />
-                                </div>
-                            )}
-                        </>
-                    ) : (
-                        <h3 className="px-4 my-12 text-center">error on get private posts</h3>
-                    )}
-                </div>
-            </Sidebar>
+            <SidebarWriteAndEditPost onPublish={() => setOpenPublishDialog(true)} />
         </>
     );
 }
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const { isAuthentcate, username } = withAuth(context);
-
-    if (!isAuthentcate) return { notFound: true };
-
-    return {
-        props: {
-            username,
-        },
-    };
-};

@@ -22,8 +22,37 @@ import { CommentSidebar } from '../../components/post/comment/CommentSidebar';
 import { Pages } from '../../components/auth/types';
 import { http } from '../../services';
 import PostSidebar from '../../components/sidebar/PostSidebar';
+import { db } from '../../../prisma/db';
+import { Post, Prisma, User } from '@prisma/client';
 
-const PostDetails = ({ post, isMyPost }: any) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const post = await db.post.findUnique({
+        where: {
+            id: context.query.postId as string,
+        },
+        include: {
+            _count: true,
+            author: {
+                include: {
+                    _count: true,
+                },
+            },
+            comments: true,
+        },
+    });
+
+    if (!post) return { notFound: true };
+    const { currentUser } = withAuth(context);
+
+    return {
+        props: {
+            isMyPost: currentUser.id === post.author.id,
+            post: JSON.parse(JSON.stringify(post)),
+        },
+    };
+};
+
+const PostDetails = ({ post, isMyPost }: PostDetailsProps) => {
     const { query } = useRouter();
     const { user, setUser, isAuthenticate, openLoginAndRegisterDialog } = useAppContext();
 
@@ -67,13 +96,21 @@ const PostDetails = ({ post, isMyPost }: any) => {
     };
 
     useEffect(() => {
-        setLikesCount(post.likes.length);
+        // setLikesCount(post.likes.length);
         setCommentsCount(post.comments.length);
-        if (!isEmpty(user) && post.likes?.includes?.(user._id)) setIsPostLiked(true);
-        else setIsPostLiked(false);
-        if (!isEmpty(user)) setIsSaved(user?.savaedPosts?.includes?.(post._id));
+        // if (!isEmpty(user) && post.likes?.includes?.(user.id)) setIsPostLiked(true);
+        // else setIsPostLiked(false);
+        if (!isEmpty(user)) setIsSaved(user?.savaedPosts?.includes?.(post.id));
         else setIsSaved(false);
-    }, [query, user._id]);
+    }, [query, user]);
+
+    if (!post.isPublic) {
+        return (
+            <div className="flex items-center justify-center w-full h-screen">
+                <h3 className="text-lg">this post is private</h3>
+            </div>
+        );
+    }
 
     return (
         <Fragment>
@@ -81,14 +118,14 @@ const PostDetails = ({ post, isMyPost }: any) => {
                 <Container>
                     <PostDetailsHeader post={post} setOpenDropdown={setIsOpenMenu} />
 
-                    <main className={`${post?.rtl ? 'rtl' : ''}`} dangerouslySetInnerHTML={{ __html: post.template }}></main>
+                    <main className={`${post.rtl ? 'rtl' : ''}`} dangerouslySetInnerHTML={{ __html: post.template }}></main>
 
                     <PostTags tags={post.tags} />
 
                     <div className="flex items-center justify-between mt-12 pb-4">
                         <div className="flex items-center gap-3">
                             {!likeLoading ? (
-                                <IconButton onClick={() => likePost(post._id)}>
+                                <IconButton onClick={() => likePost(post.id)}>
                                     {isPostLiked ? (
                                         <ThumbUp className="text-gray-600" />
                                     ) : (
@@ -109,7 +146,7 @@ const PostDetails = ({ post, isMyPost }: any) => {
                             {bookmarkLoading ? (
                                 <CircularProgress size={18} className="mx-[11px]" />
                             ) : (
-                                <IconButton onClick={() => savePost(post._id)}>
+                                <IconButton onClick={() => savePost(post.id)}>
                                     {isSaved ? (
                                         <BookmarkOutlined className="text-neutral-700" />
                                     ) : (
@@ -126,10 +163,10 @@ const PostDetails = ({ post, isMyPost }: any) => {
 
                 <MoreFromUser post={post} />
             </div>
-            <PostSidebar user={post.user} postId={post._id} />
+            <PostSidebar user={post.author} postId={post.id} showRecommendedPosts />
 
             {isMyPost && !isEmpty(user) ? (
-                <MyPostDropdown open={isOpenMenu} setOpen={setIsOpenMenu} postId={post._id} />
+                <MyPostDropdown open={isOpenMenu} setOpen={setIsOpenMenu} postId={post.id} />
             ) : (
                 <UserPostDropdown open={isOpenMenu} setOpen={setIsOpenMenu} />
             )}
@@ -145,22 +182,13 @@ const PostDetails = ({ post, isMyPost }: any) => {
     );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const res = await fetch(`http://localhost:8000/posts/${context.params?.postId}`);
-    if (res.status !== 200) return { notFound: true };
-
-    const post = await res.json();
-    const { username } = withAuth(context);
-    
-    if (!post) return { notFound: true };
-    if (!post.isPublic && username !== post.user.username) return { notFound: true };
-
-    return {
-        props: {
-            isMyPost: username === post.user.username,
-            post,
-        },
+interface PostDetailsProps {
+    post: Post & {
+        _count: Prisma.PostCountOutputType;
+        comments: Comment[];
+        author: User;
     };
-};
+    isMyPost: boolean;
+}
 
 export default PostDetails;

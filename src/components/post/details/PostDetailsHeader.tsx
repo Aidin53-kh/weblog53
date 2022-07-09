@@ -13,19 +13,19 @@ export const PostDetailsHeader: React.FC<PostDetailsHeaderProps> = ({ post, setO
     return (
         <div className="flex items-center justify-between mb-12">
             <div className="flex items-center gap-4">
-                <Link href={`/${post.user.username}`}>
+                <Link href={`/${post.author.username}`}>
                     <a>
-                        {post.user.avatar ? (
-                            <Avatar className="h-12 w-12" src={`http://localhost:8000/public/avatars/${post.user.avatar}`} />
+                        {post.author.avatar ? (
+                            <Avatar className="h-12 w-12" src={`https://weblog53.netlify.app/uploads/avatars/${post.author.avatar}`} />
                         ) : (
                             <Avatar className="h-12 w-12" />
                         )}
                     </a>
                 </Link>
                 <div>
-                    <Link href={`/${post.user.username}`}>
+                    <Link href={`/${post.author.username}`}>
                         <a>
-                            <h4 className="text-lg">{post.user.username}</h4>
+                            <h4 className="text-lg">{post.author.username}</h4>
                         </a>
                     </Link>
                     <div className="flex items-center gap-2">

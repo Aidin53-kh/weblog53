@@ -1,0 +1,68 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id         String    @id @default(cuid())
+    username   String    @unique
+    email      String
+    password   String
+    followers  User[]    @relation("UserFollows")
+    followings User[]    @relation("UserFollows")
+    about      About?
+    avatar     String?
+    bio        String?
+    posts      Post[]    @relation("UserPosts")
+    comments   Comment[]
+    savedPosts Post[]
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime  @updatedAt
+}
+
+model About {
+    template String
+    rtl      Boolean @default(false)
+    user     User    @relation(fields: [userId], references: [id])
+    userId   String
+
+    @@id([userId])
+}
+
+model Post {
+    id          String    @id @default(cuid())
+    title       String
+    description String
+    template    String
+    rtl         Boolean   @default(false)
+    author      User      @relation("UserPosts", fields: [authorId], references: [id])
+    authorId    String
+    readingTime Int
+    tags        String[]
+    thumbnail   String
+    images      String[]
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    comments    Comment[]
+    isPublic    Boolean   @default(true)
+    savedUsers  User[]
+}
+
+model Comment {
+    id        String    @id @default(cuid())
+    author    User      @relation(fields: [authorId], references: [id])
+    authorId  String
+    template  String
+    post      Post      @relation(fields: [postId], references: [id])
+    postId    String
+    replys    Comment[] @relation("CommentReplys")
+    reply     Comment?  @relation("CommentReplys", fields: [replyId], references: [id])
+    replyId   String?
+    rtl       Boolean   @default(false)
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+}

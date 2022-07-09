@@ -6,46 +6,50 @@ import { isEmpty } from 'lodash';
 import { Button, Sidebar, SidebarSearch, SidebarUserInfo } from '.';
 import { useAppContext } from '../../providers/AppProvider';
 import { http } from '../../services';
-import { Pages } from '../auth/types';
 import { RecommendedPosts } from '../post/details/RecommendedPosts';
 
 interface PostSidebarProps {
     user: any;
-    postId: string;
+    postId?: string;
+    showRecommendedPosts?: boolean;
 }
 
-const PostSidebar: React.FC<PostSidebarProps> = ({ user, postId }) => {
+const PostSidebar: React.FC<PostSidebarProps> = ({ user, postId, showRecommendedPosts = false }) => {
     const router = useRouter();
     const context = useAppContext();
 
-    const [followersCount, setFollowersCount] = useState(user?.followers?.length || 0); // for user sidebar
-    const [isFollowed, setIsFollowed] = useState(false); // for user sidebar
+    const [followersCount, setFollowersCount] = useState(0);
+    const [isFollowed, setIsFollowed] = useState(false);
+    const [isFollowedLoading, setIsFollowedLoading] = useState(true);
+    const [followLoading, setFollowLoading] = useState(false);
 
     const handleFollow = async () => {
+        setFollowLoading(true);
         try {
-            const { data } = await http.get(`/users/${user.username}/follow`);
-
-            context.setUser({ ...context.user, followings: data.user.followings });
-            setFollowersCount(data.targetUser.followersCount);
+            const { data } = await http.get(`/api/authors/${user.id}/follow`);
+            setFollowersCount(data.user._count.followers);
             setIsFollowed(true);
         } catch (error: any) {
             if (error.response.status === 401) {
-                context.openLoginAndRegisterDialog(Pages.LOGIN);
+                alert('auth require');
             }
+        } finally {
+            setFollowLoading(false);
         }
     };
 
     const handleUnFollow = async () => {
+        setFollowLoading(true);
         try {
-            const { data } = await http.get(`/users/${user.username}/unfollow`);
-
-            context.setUser({ ...context.user, followings: data.user.followings });
-            setFollowersCount(data.targetUser.followersCount);
+            const { data } = await http.get(`/api/authors/${user.id}/unfollow`);
+            setFollowersCount(data.user._count.followers);
             setIsFollowed(false);
         } catch (error: any) {
             if (error.response.status === 401) {
-                context.openLoginAndRegisterDialog(Pages.LOGIN);
+                alert('auth require');
             }
+        } finally {
+            setFollowLoading(false);
         }
     };
 
@@ -56,13 +60,21 @@ const PostSidebar: React.FC<PostSidebarProps> = ({ user, postId }) => {
         });
     };
 
-    useEffect(() => {
-        if (!context.authLoading && !isEmpty(context.user) && context.user.username !== user.username) {
-            if (context.user.followings.map((f: any) => f.username).includes(user.username)) {
-                setIsFollowed(true);
-            }
+    const handleCheckIsFollowed = async () => {
+        try {
+            const { data } = await http.get(`/api/authors/${user.id}/isFollowed`);
+            setIsFollowed(data.isFollowed);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsFollowedLoading(false);
         }
-    }, [context.authLoading, context.user]);
+    };
+
+    useEffect(() => {
+        setFollowersCount(user._count.followers);
+        handleCheckIsFollowed();
+    }, [user]);
 
     useEffect(() => {
         if (isEmpty(context.user)) setIsFollowed(false);
@@ -81,13 +93,21 @@ const PostSidebar: React.FC<PostSidebarProps> = ({ user, postId }) => {
                 </div>
             ) : (
                 <div className="flex items-center justify-end gap-4 mt-8">
-                    {isFollowed ? (
-                        <Button className="w-full" onClick={handleUnFollow}>
-                            UnFollow
-                        </Button>
+                    {!isFollowedLoading && !followLoading ? (
+                        <>
+                            {isFollowed ? (
+                                <Button className="w-full" onClick={handleUnFollow}>
+                                    UnFollow
+                                </Button>
+                            ) : (
+                                <Button className="w-full" onClick={handleFollow}>
+                                    Follow
+                                </Button>
+                            )}
+                        </>
                     ) : (
-                        <Button className="w-full" onClick={handleFollow}>
-                            Follow
+                        <Button className="w-full disabled:border-blue-300 py-[8px]" disabled>
+                            <CircularProgress size={17} />
                         </Button>
                     )}
                 </div>
@@ -95,7 +115,7 @@ const PostSidebar: React.FC<PostSidebarProps> = ({ user, postId }) => {
 
             <SidebarSearch onSearch={(value) => hanldeSearch(value)} />
             <SidebarUserInfo user={user} myInfo={context?.user?.username === user.username} followersCount={followersCount} />
-            <RecommendedPosts postId={postId} />
+            {showRecommendedPosts && postId && <RecommendedPosts postId={postId} />}
         </Sidebar>
     );
 };

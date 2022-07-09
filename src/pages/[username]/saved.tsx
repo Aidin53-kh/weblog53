@@ -10,11 +10,23 @@ import { http } from '../../services';
 import { UserTab } from '../../components/user/Tabs';
 import Post from '../../components/post/card/Post';
 
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const { currentUser } = withAuth(context);
+
+    if (currentUser.username !== context.params?.username) {
+        return {
+            notFound: true,
+        };
+    }
+
+    return { props: {} };
+};
+
 const Saved = () => {
     const context = useAppContext();
     const { query } = useRouter();
 
-    const { data, error } = useSWR(`/users/savedPosts?${query.search ? 'search=' + query.search : ''}`, (url) =>
+    const { data, error } = useSWR(`/api/posts/saved`, (url) =>
         http.get(url).then((res) => res.data)
     );
 
@@ -26,7 +38,7 @@ const Saved = () => {
             </div>
         );
     }
-    console.log(data);
+
     return (
         <UserPageLayout user={context.user} activeTab={UserTab.SAVED}>
             <h2 className="text-2xl font-bold text-neutral-800 mb-4 mt-12">Saved Posts</h2>
@@ -35,34 +47,22 @@ const Saved = () => {
                     {data ? (
                         <>
                             {data.posts.map((post: any) => (
-                                <Post key={post._id} post={post} />
+                                <Post key={post.id} post={post} />
                             ))}
                         </>
                     ) : (
-                        <div className="w-full h-screen text-center mt-44">
-                            <h1 className="text-2xl font-semibold">Loading Posts...</h1>
+                        <div className="w-full h-screen text-center mt-36">
+                            <h1 className="text-xl">Loading Posts...</h1>
                         </div>
                     )}
                 </>
             ) : (
-                <div className="w-full h-screen text-center mt-44">
-                    <h2 className="text-2xl">faild to get posts</h2>
+                <div className="w-full h-screen text-center mt-36">
+                    <h2 className="text-xl">faild to get posts</h2>
                 </div>
             )}
         </UserPageLayout>
     );
-};
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const { username } = withAuth(context);
-
-    if (username !== context.params?.username) {
-        return {
-            notFound: true,
-        };
-    }
-
-    return { props: {} };
 };
 
 export default Saved;

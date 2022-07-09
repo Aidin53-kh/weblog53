@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState, createContext } from 'react';
-import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import { isEmpty } from 'lodash';
 import LoginAndRegisterDialog from '../components/auth';
@@ -10,10 +9,8 @@ import { AppContext, DEFAULT_APP_CONTEXT_VALUES } from './types';
 export const appContext = createContext<AppContext>(DEFAULT_APP_CONTEXT_VALUES);
 
 export const AppProvider: React.FC = ({ children }) => {
-    const router = useRouter();
-
-    const { data: response, error } = useSWR('/auth/isLogin', (url: string) => http.get(url), {
-        revalidateOnFocus: false,
+    const { data, error } = useSWR('/api/auth/test', (url: string) => http.get(url).then(res => res.data), {
+        revalidateOnFocus: true,
         shouldRetryOnError: false,
     });
 
@@ -32,10 +29,8 @@ export const AppProvider: React.FC = ({ children }) => {
 
     const handleRegister = async (values: any) => {
         try {
-            const { data } = await http.post('/auth/register', values);
-            closeLoginAndRegisterDialog();
+            const { data } = await http.post('/api/auth/register', values);
             setUser(data.user);
-            router.push(`/${data.user.username}`);
         } catch (error: any) {
             console.log(error.response);
         }
@@ -43,10 +38,8 @@ export const AppProvider: React.FC = ({ children }) => {
 
     const handleLogin = async (values: any) => {
         try {
-            const { data } = await http.post('/auth/login', values);
-            closeLoginAndRegisterDialog();
+            const { data } = await http.post('/api/auth/login', values);
             setUser(data.user);
-            router.push(`/${data.user.username}`);
         } catch (error: any) {
             console.log(error.response);
         }
@@ -54,7 +47,7 @@ export const AppProvider: React.FC = ({ children }) => {
 
     const handleLogout = async () => {
         try {
-            await http.get('/auth/logout');
+            await http.get('/api/auth/logout');
             setUser({});
         } catch (error) {
             console.log(error);
@@ -62,12 +55,15 @@ export const AppProvider: React.FC = ({ children }) => {
     };
 
     useEffect(() => {
-        if (response?.status === 200) setUser(response.data.user);     
-    }, [response]);
+        if (data) {
+            setUser(data.user);
+            setIsAuthenticate(true);
+        }
+    }, [data]);
 
     useEffect(() => {
-        if (error || response) setAuthLoading(false);
-    }, [error, response]);
+        if (error || data) setAuthLoading(false);
+    }, [error, data]);
 
     useEffect(() => setIsAuthenticate(!isEmpty(user)), [user]);
 

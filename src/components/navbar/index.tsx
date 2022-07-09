@@ -29,7 +29,7 @@ const Navbar = () => {
                                     <Bookmarks className='w-5 h-5' />
                                 </a>
                             </Link>
-                            <Link href={`/${user.username}`}>
+                            <Link href={`/settings`}>
                                 <a>
                                     <Gear className='w-5 h-5' />
                                 </a>
@@ -82,7 +82,7 @@ const Navbar = () => {
                                 {!!user?.avatar ? (
                                     <Link href={`/${user.username}`}>
                                         <a>
-                                            <Avatar src={`http://localhost:8000/public/avatars/${user.avatar}`} />
+                                            <Avatar src={`https://weblog53.netlify.app/uploads/avatar/${user.avatar}`} />
                                         </a>
                                     </Link>
                                 ) : (

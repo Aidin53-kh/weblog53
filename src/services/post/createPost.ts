@@ -9,9 +9,15 @@ type CreatePostProps = {
         [key: string]: File; // key is object URL as refrence from File
     };
     isPublic: boolean;
+    authorId: string
 };
 
-export const createPost = async ({ editor, tags, rtl, postImages, isPublic }: CreatePostProps) => {
+type UploadPostImagesResponse = {
+    file: string; 
+    ref: string;
+}[]
+
+export const createPost = async ({ editor, tags, rtl, postImages, isPublic, authorId }: CreatePostProps) => {
     const { title, description, error } = getTitleAndDiscription(editor);
     const formData = new FormData();
     let thumbnail = '';
@@ -24,17 +30,18 @@ export const createPost = async ({ editor, tags, rtl, postImages, isPublic }: Cr
     });
 
     try {
-        const { data } = await http.post<{ file: string; ref: string }[]>('/posts/savePostImages', formData);
+        const { data } = await http.post<UploadPostImagesResponse>('/api/upload/postImages', formData);
+
         editor?.querySelectorAll('img').forEach((img, index) => {
             data.map((imageData) => {
                 if (img.src === imageData.ref) {
                     if (index === 0) thumbnail = imageData.file;
-                    img.src = `http://localhost:8000/public/posts/${imageData.file}`;
+                    img.src = `https://weblog53.netlify.app/uploads/post/${imageData.file}`;
                 }
             });
         });
 
-        const { data: post } = await http.post('/posts', {
+        const { data: post } = await http.post('/api/posts', {
             template: editor?.innerHTML,
             title,
             description,
@@ -43,6 +50,7 @@ export const createPost = async ({ editor, tags, rtl, postImages, isPublic }: Cr
             thumbnail,
             images: data.map((imageData) => imageData.file),
             isPublic,
+            authorId,
         });
 
         return { error: null, post };

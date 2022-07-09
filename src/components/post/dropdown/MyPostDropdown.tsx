@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Menu, MenuItem } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
 import { http } from '../../../services';
+import { deletePost } from '../../../services/post/deletePost';
 
 interface MyPostDropdownProps {
     open: null | HTMLElement;
@@ -11,15 +12,6 @@ interface MyPostDropdownProps {
 }
 
 export const MyPostDropdown: React.FC<MyPostDropdownProps> = ({ open, setOpen, postId }) => {
-    const deletePost = async () => {
-        try {
-            const { data } = await http.delete(`/posts/${postId}`);
-            console.log(data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     return (
         <Menu
             elevation={0}
@@ -38,7 +30,7 @@ export const MyPostDropdown: React.FC<MyPostDropdownProps> = ({ open, setOpen, p
                     </MenuItem>
                 </a>
             </Link>
-            <MenuItem className="pl-3 pr-10" onClick={deletePost}>
+            <MenuItem className="pl-3 pr-10" onClick={() => deletePost(postId)}>
                 <Delete fontSize="small" className="text-gray-700" />
                 <span className="ml-3">Delete</span>
             </MenuItem>

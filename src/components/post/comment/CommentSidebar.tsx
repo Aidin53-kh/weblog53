@@ -35,7 +35,7 @@ export const CommentSidebar: FC<CommentSidebarProps> = ({
     const getCommnets = async (mode?: 'clear') => {
         isEmpty(comments) ? setFetchCommentsLoading(true) : setReftchCommentsLoading(true);
         try {
-            const { data } = await http.get(`comments/${post._id}?skip=${comments.length}`);
+            const { data } = await http.get(`comments/${post.id}?skip=${comments.length}`);
             if (mode === 'clear') {
                 setComments(data.comments);
             } else {
@@ -54,7 +54,7 @@ export const CommentSidebar: FC<CommentSidebarProps> = ({
     const addComment = async (template: string, rtl: boolean) => {
         setSendCommentLoading(true);
         try {
-            const { data } = await http.post(`/comments/${post._id}`, { template, rtl });
+            const { data } = await http.post(`/comments/${post.id}`, { template, rtl });
             setCommentsCount((c) => c + 1);
             setComments([data, ...comments]);
         } catch (error) {
@@ -106,9 +106,9 @@ export const CommentSidebar: FC<CommentSidebarProps> = ({
                                         <Comment
                                             setComments={setComments}
                                             setCommentsCount={setCommentsCount}
-                                            key={comment._id}
+                                            key={comment.id}
                                             comment={comment}
-                                            postId={post._id}
+                                            postId={post.id}
                                         />
                                     ))}
                                 </>

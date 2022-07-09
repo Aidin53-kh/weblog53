@@ -9,7 +9,7 @@ export const settingsContext = React.createContext<SettingsContext>(DEFAULT_SETT
 
 export const SettingsProvider: React.FC = ({ children }) => {
     const router = useRouter();
-    const context = useAppContext();
+    const { setUser } = useAppContext();
 
     const [usernameEditMode, setUsernameEditMode] = useState(false);
     const [bioEditMode, setBioEditMode] = useState(false);
@@ -32,10 +32,10 @@ export const SettingsProvider: React.FC = ({ children }) => {
 
     const handleEditUsername = async (values: any) => {
         try {
-            const { data } = await http.post('/users/username', values);
+            const { data } = await http.post('/api/authors/edit/username', values);
             setUsernameEditMode(false);
-            context.setUser({ ...context.user, username: data.username });
-            router.push(`/${data.username}`);
+            setUser(data.user);
+            router.push(`/${data.user.username}`);
         } catch (error: any) {
             if (error.response.status === 409) {
                 alert(`user ${values.username} is exist`);
@@ -45,9 +45,9 @@ export const SettingsProvider: React.FC = ({ children }) => {
 
     const handleEditBio = async (values: any) => {
         try {
-            const { data } = await http.post('/users/bio', values);
+            const { data } = await http.post('/api/authors/edit/bio', values);
             setBioEditMode(false);
-            context.setUser({ ...context.user, bio: data.bio });
+            setUser(data.user);
         } catch (error) {
             console.log(error);
         }
@@ -61,8 +61,8 @@ export const SettingsProvider: React.FC = ({ children }) => {
         setLoadingAvatar(true);
 
         try {
-            const { data } = await http.post('/users/avatar', formData);
-            context.setUser({ ...context.user, avatar: data.avatar });
+            const { data } = await http.post('/api/authors/edit/avatar', formData);
+            setUser(data.user);
         } catch (error) {
             console.log(error);
         } finally {
@@ -73,11 +73,8 @@ export const SettingsProvider: React.FC = ({ children }) => {
     const handleDeleteAvatar = async () => {
         setDeleteAvatarLoading(true);
         try {
-            const { data, status } = await http.delete('/users/avatar');
-            console.log(data);
-            if (status === 200) {
-                context.setUser(data.user);
-            }
+            const { data } = await http.delete('/api/authors/edit/avatar');
+            setUser(data.user);
         } catch (error) {
             console.log(error);
         } finally {

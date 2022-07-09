@@ -45,7 +45,7 @@ const Settings = () => {
                         <div className="flex items-center my-5">
                             <span className="mr-12 font-semibold">URL</span>
                             <p className="text-neutral-800">
-                                http://localhost:8000/<span className="font-semibold">{values.username}</span>
+                                https://weblog53.netlify.app/<span className="font-semibold">{values.username}</span>
                             </p>
                         </div>
                         <p className="text-sm text-gray-500">
@@ -118,9 +118,13 @@ const Settings = () => {
                     <label htmlFor="username" className="cursor-pointer rounded-full">
                         <Avatar
                             className="w-20 h-20 border"
-                            src={!settings.loadingAvatar ? `http://localhost:8000/public/avatars/${user.avatar}` : undefined}
+                            src={
+                                !settings.loadingAvatar && user.avatar
+                                    ? `https://weblog53.netlify.app/uploads/avatar/${user.avatar}`
+                                    : undefined
+                            }
                         >
-                            {settings.loadingAvatar ? <CircularProgress className='text-white' size={30} /> : null}
+                            {settings.loadingAvatar ? <CircularProgress className="text-white" size={30} /> : null}
                         </Avatar>
                     </label>
                 </div>

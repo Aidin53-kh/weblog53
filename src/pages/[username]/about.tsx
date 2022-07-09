@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { isEmpty } from 'lodash';
 import { Edit } from '@mui/icons-material';
@@ -8,25 +8,45 @@ import { UserTab } from '../../components/user/Tabs';
 import UserPageLayout from '../../layouts/UserPageLayout';
 import Button from '../../components/button';
 import TextEditor from '../../components/editor';
+import { db } from '../../../prisma/db';
+import { About, Prisma, User } from '@prisma/client';
+import { Pen } from 'react-bootstrap-icons';
 
-const About = ({ user }: any) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const user = await db.user.findUnique({
+        where: { username: context.query.username as string },
+        include: {
+            _count: true,
+            about: true,
+        },
+    });
+
+    if (!user) return { notFound: true };
+
+    return {
+        props: {
+            user: JSON.parse(JSON.stringify(user)),
+        },
+    };
+};
+
+const About = ({ user }: AboutProps) => {
     const context = useAppContext();
 
     const [editMode, setEditMode] = useState(false);
-    const [aboutTemplate, setAboutTemplate] = useState(user.about?.template);
+    const [aboutTemplate, setAboutTemplate] = useState('');
+    const [rtl, setRtl] = useState(false);
 
-    const [rtl, setRtl] = useState((user.about?.rtl as boolean) || false);
     const editorRef = useRef<HTMLDivElement>(null);
 
     const handleEditAboutTemplate = async () => {
         try {
-            const { data } = await http.patch('/users/about', {
-                about: editorRef.current?.textContent?.trim() ? editorRef.current?.innerHTML : '',
+            const { data } = await http.patch('/api/authors/edit/about', {
+                template: editorRef.current?.textContent?.trim() ? editorRef.current?.innerHTML : '',
                 rtl,
             });
 
             setAboutTemplate(data.about.template);
-            context.setUser({ ...context.user, about: data.about });
             setEditMode(false);
         } catch (error) {
             console.log(error);
@@ -35,8 +55,15 @@ const About = ({ user }: any) => {
 
     const setEditorToEditMode = () => {
         setEditMode(true);
-        setTimeout(() => editorRef.current?.focus(), 10);
+        setTimeout(() => editorRef.current?.focus(), 100);
     };
+
+    useEffect(() => {
+        if (user.about) {
+            setRtl(user.about.rtl);
+            setAboutTemplate(user.about.template);
+        }
+    }, [user]);
 
     return (
         <UserPageLayout activeTab={UserTab.ABOUT} user={user}>
@@ -54,28 +81,28 @@ const About = ({ user }: any) => {
                                 ref={editorRef}
                                 rtl={rtl}
                                 onDirChange={(data) => setRtl(data.rtl)}
-                                defaultTemplate={context.user.about.template}
+                                defaultTemplate={user.about?.template}
                             />
                         </>
                     ) : (
                         <div>
-                            {context.user.about.template ? (
+                            {user.about?.template ? (
                                 <div>
                                     <div className="mb-8 mt-4 flex justify-end">
                                         <Button onClick={setEditorToEditMode}>Edit</Button>
                                     </div>
                                     <div
-                                        className={`${context.user.about?.rtl ? 'rtl' : 'ltr'}`}
-                                        dangerouslySetInnerHTML={{ __html: context.user.about.template }}
+                                        className={`${user.about.rtl ? 'rtl' : 'ltr'}`}
+                                        dangerouslySetInnerHTML={{ __html: user.about.template }}
                                     ></div>
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-center justify-center h-56">
-                                    <h2 className="text-2xl font-bold text-neutral-900 mt-12">
-                                        Write Some Worlds About Yourself
+                                    <h2 className="text-xl font-semibold text-neutral-900 mt-12">
+                                        Write Some Words About Yourself
                                     </h2>
                                     <div className="p-3 rounded-full border mt-6" onClick={setEditorToEditMode}>
-                                        <Edit className="text-gray-500" />
+                                        <Pen className="text-gray-600" />
                                     </div>
                                 </div>
                             )}
@@ -103,15 +130,8 @@ const About = ({ user }: any) => {
     );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const res = await fetch(`http://localhost:8000/users/${context.params?.username}`);
-    const user = await res.json();
-
-    if (!user.username) return { notFound: true };
-
-    return {
-        props: { user },
-    };
-};
+interface AboutProps {
+    user: User & { about: About; _count: Prisma.UserCountOutputType };
+}
 
 export default About;

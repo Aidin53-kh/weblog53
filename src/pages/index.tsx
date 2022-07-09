@@ -1,16 +1,17 @@
 import { NextPage } from 'next';
 import { Fragment } from 'react';
-import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import Container from '../components/container';
 import AppSidebar from '../components/sidebar/AppSidebar';
 import Post from '../components/post/card/Post';
 import { http } from '../services';
 import { CircularProgress } from '@mui/material';
+import { Post as IPost } from '@prisma/client';
+import { useAppContext } from '../providers/AppProvider';
 
 const Home: NextPage = () => {
-    const router = useRouter();
-    const { data, error } = useSWR(`/posts/?search=${router.query.search || ''}`, (url) => http.get(url).then((res) => res.data));
+    const { user } = useAppContext();
+    const { data, error } = useSWR<GetAllPostsResponse>(`/api/posts`, (url) => http.get(url).then((res) => res.data));
 
     return (
         <Fragment>
@@ -23,9 +24,9 @@ const Home: NextPage = () => {
                                 <>
                                     {data.posts.length > 0 ? (
                                         <>
-                                            {data.posts.map((post: any) => (
+                                            {data.posts.map((post) => (
                                                 <>
-                                                    <Post key={post._id} post={post} />
+                                                    <Post key={post.id} post={post} />
                                                 </>
                                             ))}
                                         </>
@@ -52,5 +53,13 @@ const Home: NextPage = () => {
         </Fragment>
     );
 };
+
+export interface GetAllPostsResponse {
+    posts: (IPost & { author: {
+        username: string;
+        avatar: string | null;
+        id: string;
+    }})[]
+}
 
 export default Home;

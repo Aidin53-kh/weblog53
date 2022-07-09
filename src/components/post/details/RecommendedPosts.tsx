@@ -17,7 +17,7 @@ export const RecommendedPosts: React.FC<RecommendedPostsProps> = ({ postId }) =>
     const getSimilarPosts = async () => {
         setLoading(true);
         try {
-            const { data } = await http.get(`/posts/${postId}/similar`);
+            const { data } = await http.get(`/api/posts/${postId}/similar`);
             setPosts(data.posts);
         } catch (error: any) {
             console.log(error.response);
@@ -37,7 +37,7 @@ export const RecommendedPosts: React.FC<RecommendedPostsProps> = ({ postId }) =>
             {!loading ? (
                 <>
                     {posts.map((post: any) => (
-                        <SmallPost post={post} key={post._id} />
+                        <SmallPost post={post} key={post.id} />
                     ))}
                 </>
             ) : (

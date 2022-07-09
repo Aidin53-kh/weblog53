@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
+import { Post, User } from '@prisma/client';
 import {
     Checkbox,
     CircularProgress,
@@ -11,17 +12,37 @@ import {
     FormControlLabel,
     TextField,
 } from '@mui/material';
-import useSWR from 'swr';
-import { Container, Button, Sidebar } from '../../components/sidebar';
-import TextEditor from '../../components/editor';
+import { db } from '../../../prisma/db';
 import { withAuth } from '../../utils/auth';
+import TextEditor from '../../components/editor';
+import SidebarWriteAndEditPost from '../../components/sidebar/SidebarWriteAndEditPost';
+import { Container, Button } from '../../components/sidebar';
 import { editPost } from '../../services/post/editPost';
-import SmallPost from '../../components/post/card/SmallPost';
-import { http } from '../../services';
 
-const EditPost: React.FC = ({ post }: any) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const post = await db.post.findUnique({
+        where: { id: context.query.postId as string },
+        include: {
+            author: true
+        }
+    });
+
+    const { currentUser } = withAuth(context);
+    if (!post || post.author.id !== currentUser.id) {
+        return {
+            notFound: true,
+        };
+    }
+
+    return {
+        props: {
+            post: JSON.parse(JSON.stringify(post)),
+        },
+    };
+};
+
+const EditPost = ({ post }: EditPostProps) => {
     const router = useRouter();
-    const { data, error } = useSWR(`/posts/private`, (url) => http.get(url).then((res) => res.data));
 
     const [openPublishDialog, setOpenPublishDialog] = useState(false);
     const [rtl, setRtl] = useState(post.rtl || false);
@@ -40,7 +61,7 @@ const EditPost: React.FC = ({ post }: any) => {
                 editor: editorRef.current,
                 rtl,
                 tags,
-                postId: post._id,
+                postId: post.id,
                 postImages,
                 isPublic,
             });
@@ -49,7 +70,7 @@ const EditPost: React.FC = ({ post }: any) => {
                 console.log(error);
             } else {
                 setLoading('redirecting');
-                router.push(`/posts/${post._id}`);
+                router.push(`/posts/${post.id}`);
                 console.log('POST EDITED: ', $post);
             }
         } catch (error) {
@@ -107,60 +128,13 @@ const EditPost: React.FC = ({ post }: any) => {
                     </DialogActions>
                 </Dialog>
             </div>
-            <Sidebar className="py-6">
-                <Button fullWidth onClick={() => setOpenPublishDialog(true)}>
-                    publish
-                </Button>
-                <div>
-                    <h2 className="text-lg font-semibold pt-8 mb-6">Your Private Posts</h2>
-                    {!error ? (
-                        <>
-                            {data ? (
-                                <>
-                                    {data.posts.map((p: any) => (
-                                        <SmallPost
-                                            key={p._id}
-                                            post={p}
-                                            showUserInfo={false}
-                                            showDeleteButton
-                                            showEditButton
-                                            showLeftLine={p._id === post._id}
-                                        />
-                                    ))}
-                                </>
-                            ) : (
-                                <div className="text-center mt-12">
-                                    <CircularProgress size={20} />
-                                </div>
-                            )}
-                        </>
-                    ) : (
-                        <h3 className="px-4 my-12 text-center">error on get private posts</h3>
-                    )}
-                </div>
-            </Sidebar>
+            <SidebarWriteAndEditPost onPublish={() => setOpenPublishDialog(true)} />
         </>
     );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const res = await fetch(`http://localhost:8000/posts/${context.params?.postId}`);
-    const post = await res.json();
-
-    const { username } = withAuth(context);
-    if (!post || post.user.username !== username) {
-        return {
-            notFound: true,
-        };
-    }
-
-    return {
-        props: {
-            post,
-        },
-    };
-};
-
-EditPost.displayName = "EditPost";
+interface EditPostProps {
+    post: Post & { author: User }
+}
 
 export default EditPost;
