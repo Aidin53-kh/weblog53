@@ -182,7 +182,7 @@ export const Comment: React.FC<CommnetProps> = ({
             />
             <header className="flex items-center justify-between gap-5">
                 <div className="flex items-center gap-2">
-                    <Avatar src={comment.user.avatar && `https://weblog53.netlify.app/uploads/avatars/${comment.user.avatar}`} />
+                    <Avatar src={comment.user.avatar && `http://localhost:3000/uploads/avatars/${comment.user.avatar}`} />
                     <div>
                         <h4 className="text-sm">
                             {comment.user.username} {!isEmpty(user) && user.id === comment.user && `(my comment)`}

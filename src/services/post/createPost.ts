@@ -36,7 +36,7 @@ export const createPost = async ({ editor, tags, rtl, postImages, isPublic, auth
             data.map((imageData) => {
                 if (img.src === imageData.ref) {
                     if (index === 0) thumbnail = imageData.file;
-                    img.src = `https://weblog53.netlify.app/uploads/post/${imageData.file}`;
+                    img.src = `http://localhost:3000/uploads/post/${imageData.file}`;
                 }
             });
         });

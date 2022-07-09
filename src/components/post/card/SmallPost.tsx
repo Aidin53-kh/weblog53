@@ -35,7 +35,7 @@ const SmallPost: React.FC<SmallPostProps> = ({
                                     {post.author.avatar ? (
                                         <Avatar
                                             className="h-6 w-6"
-                                            src={`https://weblog53.netlify.app/uploads/avatars/${post.author.avatar}`}
+                                            src={`http://localhost:3000/uploads/avatars/${post.author.avatar}`}
                                         />
                                     ) : (
                                         <Avatar className="h-8 w-8" />
@@ -69,7 +69,7 @@ const SmallPost: React.FC<SmallPostProps> = ({
             <div className="flex-[2] overflow-hidden items-center max-h-36">
                 <img
                 className='rounded-md'
-                    src={post?.thumbnail ? `https://weblog53.netlify.app/uploads/posts/${post.thumbnail}` : faker.image.image()}
+                    src={post?.thumbnail ? `http://localhost:3000/uploads/posts/${post.thumbnail}` : faker.image.image()}
                     loading="lazy"
                 />
             </div>

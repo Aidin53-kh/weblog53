@@ -39,7 +39,7 @@ export const editPost = async ({ editor, tags, rtl, postId, postImages, isPublic
                 data.map((imageData) => {
                     if (index === 0) thumbnail = imageData.file;
                     if (img.src === imageData.ref) {
-                        img.src = `https://weblog53.netlify.app/uploads/post/${imageData.file}`;
+                        img.src = `http://localhost:3000/uploads/post/${imageData.file}`;
                     }
                 });
             } else {

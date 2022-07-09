@@ -82,7 +82,7 @@ const Navbar = () => {
                                 {!!user?.avatar ? (
                                     <Link href={`/${user.username}`}>
                                         <a>
-                                            <Avatar src={`https://weblog53.netlify.app/uploads/avatar/${user.avatar}`} />
+                                            <Avatar src={`http://localhost:3000/uploads/avatar/${user.avatar}`} />
                                         </a>
                                     </Link>
                                 ) : (

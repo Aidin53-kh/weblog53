@@ -16,7 +16,7 @@ export const PostDetailsHeader: React.FC<PostDetailsHeaderProps> = ({ post, setO
                 <Link href={`/${post.author.username}`}>
                     <a>
                         {post.author.avatar ? (
-                            <Avatar className="h-12 w-12" src={`https://weblog53.netlify.app/uploads/avatars/${post.author.avatar}`} />
+                            <Avatar className="h-12 w-12" src={`http://localhost:3000/uploads/avatars/${post.author.avatar}`} />
                         ) : (
                             <Avatar className="h-12 w-12" />
                         )}

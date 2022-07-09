@@ -51,7 +51,7 @@ const AppSidebar: React.FC = () => {
                                             >
                                                 <ListItemAvatar>
                                                     {$user.avatar ? (
-                                                        <Avatar src={`https://weblog53.netlify.app/uploads/avatar/${$user.avatar}`} />
+                                                        <Avatar src={`http://localhost:3000/uploads/avatar/${$user.avatar}`} />
                                                     ) : (
                                                         <Avatar />
                                                     )}

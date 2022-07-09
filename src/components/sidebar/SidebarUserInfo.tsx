@@ -14,7 +14,7 @@ const SidebarUserInfo: React.FC<SidebarUserInfoProps> = ({ user, followersCount,
         <Fragment>
             <div className="mb-5 mt-10 flex items-center justify-between">
                 {user.avatar ? (
-                    <Avatar className="w-20 h-20" src={`https://weblog53.netlify.app/uploads/avatar/${user.avatar}`} />
+                    <Avatar className="w-20 h-20" src={`http://localhost:3000/uploads/avatar/${user.avatar}`} />
                 ) : (
                     <Avatar className="w-20 h-20" />
                 )}

@@ -59,7 +59,7 @@ const Post: React.FC<PostProps> = ({ post, showUserInfo = true, myPost = false, 
                                         {post.author.avatar ? (
                                             <Avatar
                                                 className="h-8 w-8"
-                                                src={`https://weblog53.netlify.app/uploads/avatar/${post.author.avatar}`}
+                                                src={`http://localhost:3000/uploads/avatar/${post.author.avatar}`}
                                             />
                                         ) : (
                                             <Avatar className="h-8 w-8" />
@@ -100,7 +100,7 @@ const Post: React.FC<PostProps> = ({ post, showUserInfo = true, myPost = false, 
                 <div className="flex flex-[4] sm:flex-[3] md:flex-[2] overflow-hidden items-center max-h-32 rounded-lg">
                     <img
                         className="rounded-lg"
-                        src={post.thumbnail ? `https://weblog53.netlify.app/uploads/post/${post.thumbnail}` : faker.image.image()}
+                        src={post.thumbnail ? `http://localhost:3000/uploads/post/${post.thumbnail}` : faker.image.image()}
                         loading="lazy"
                     />
                 </div>
