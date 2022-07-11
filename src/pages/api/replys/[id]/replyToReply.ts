@@ -18,9 +18,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         return res.status(401).json({ message: 'auth require' });
     }
 
-    if ((await db.reply.count({ where: { id: replyId } })) === 0) {
-        return res.status(404).json({ message: 'post not found' });
-    }
+    // if ((await db.reply.count({ where: { id: replyId } })) === 0) {
+    //     return res.status(404).json({ message: 'post not found' });
+    // }
 
     // const reply = await db.reply.create({
     //     data: {
