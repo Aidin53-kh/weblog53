@@ -3,9 +3,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '../../../../../prisma/db';
 var f: Comment;
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-    if (req.method !== 'GET') {
-        return res.status(405).json({ message: 'method not allowed' });
-    }
+    // if (req.method !== 'GET') {
+    //     return res.status(405).json({ message: 'method not allowed' });
+    // }
 
     // const comments = await db.comment.findMany({
     //     where: {

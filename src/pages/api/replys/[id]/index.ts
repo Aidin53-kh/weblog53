@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { db } from '../../../../../prisma/db';
+// import { db } from '../../../../../prisma/db';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-    if (req.method !== 'GET') {
-        return res.status(405).json({ message: 'method not allowed' });
-    }
+    // if (req.method !== 'GET') {
+    //     return res.status(405).json({ message: 'method not allowed' });
+    // }
 
     // const comment = await db.comment.findUnique({
     //     where: { id: req.query.commentId as string },
