@@ -22,28 +22,28 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         return res.status(404).json({ message: 'post not found' });
     }
 
-    const reply = await db.reply.create({
-        data: {
-            ...req.body,
-            authorId: currentUser.id as string,
-            replyId,
-        },
-        include: {
-            _count: true,
-            likes: {
-                select: {
-                    id: true,
-                },
-            },
-            author: {
-                select: {
-                    username: true,
-                    avatar: true,
-                    id: true,
-                },
-            },
-        },
-    });
+    // const reply = await db.reply.create({
+    //     data: {
+    //         ...req.body,
+    //         authorId: currentUser.id as string,
+    //         replyId,
+    //     },
+    //     include: {
+    //         _count: true,
+    //         likes: {
+    //             select: {
+    //                 id: true,
+    //             },
+    //         },
+    //         author: {
+    //             select: {
+    //                 username: true,
+    //                 avatar: true,
+    //                 id: true,
+    //             },
+    //         },
+    //     },
+    // });
 
-    res.status(201).json({ reply });
+    res.status(201).json({ reply: {} });
 };
