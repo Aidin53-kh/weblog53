@@ -24,7 +24,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     if (!user) return res.status(401).json({ message: 'auth require' });
-    
+    console.log(req.body)
     if (user.about) {
         const about = await db.about.update({
             where: { userId: currentUser.id as string },

@@ -172,7 +172,7 @@ const PostDetails = ({ post, isMyPost }: PostDetailsProps) => {
             )}
 
             <CommentSidebar
-                post={post}
+                postId={post.id}
                 setCommentsCount={setCommentsCount}
                 commentsCount={commentsCount}
                 openCommentSidebar={openCommentSidebar}

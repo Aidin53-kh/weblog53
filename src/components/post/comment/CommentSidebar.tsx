@@ -9,7 +9,7 @@ import { IComment } from './types';
 import { useRouter } from 'next/router';
 
 interface CommentSidebarProps {
-    post: any;
+    postId: any;
     setCommentsCount: Dispatch<SetStateAction<number>>;
     commentsCount: number;
     setOpenCommentSidebar: Dispatch<SetStateAction<boolean>>;
@@ -17,7 +17,7 @@ interface CommentSidebarProps {
 }
 
 export const CommentSidebar: FC<CommentSidebarProps> = ({
-    post,
+    postId,
     setCommentsCount,
     commentsCount,
     openCommentSidebar,
@@ -35,7 +35,8 @@ export const CommentSidebar: FC<CommentSidebarProps> = ({
     const getCommnets = async (mode?: 'clear') => {
         isEmpty(comments) ? setFetchCommentsLoading(true) : setReftchCommentsLoading(true);
         try {
-            const { data } = await http.get(`comments/${post.id}?skip=${comments.length}`);
+            const { data } = await http.get(`/api/comments/${postId}?skip=${comments.length}`);
+
             if (mode === 'clear') {
                 setComments(data.comments);
             } else {
@@ -54,11 +55,11 @@ export const CommentSidebar: FC<CommentSidebarProps> = ({
     const addComment = async (template: string, rtl: boolean) => {
         setSendCommentLoading(true);
         try {
-            const { data } = await http.post(`/comments/${post.id}`, { template, rtl });
+            const { data } = await http.post(`/api/comments/${postId}/create`, { template, rtl });
             setCommentsCount((c) => c + 1);
-            setComments([data, ...comments]);
-        } catch (error) {
-            console.log(error);
+            setComments([data.comment, ...comments]);
+        } catch (error: any) {
+            console.log(error.response);
             alert('add comment error');
         } finally {
             setSendCommentLoading(false);
@@ -108,7 +109,7 @@ export const CommentSidebar: FC<CommentSidebarProps> = ({
                                             setCommentsCount={setCommentsCount}
                                             key={comment.id}
                                             comment={comment}
-                                            postId={post.id}
+                                            postId={postId}
                                         />
                                     ))}
                                 </>

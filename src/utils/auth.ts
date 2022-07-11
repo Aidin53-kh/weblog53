@@ -23,6 +23,8 @@ export function withAuth(context: GetServerSidePropsContext | string) {
         token = context;
     } else return result;
 
+    if (!token) return result;
+
     jwt.verify(token, process.env.JWT_SECRET as string, (error, decodedToken: any) => {
         if (error) return console.log(error);
         if (decodedToken.username) {

@@ -58,6 +58,22 @@ api.delete(async (req, res) => {
 
     if (!isAuthentcate) return res.status(401).json({ message: 'auth require' });
 
+    const user = await db.user.findUnique({
+        where: { id: currentUser.id as string },
+        select: {
+            avatar: true,
+        },
+    });
+
+    if (!user) return res.status(404).json({ message: 'user not found' });
+
+    if (user.avatar) {
+        unlink(`public/uploads/avatar/${user.avatar}`, (error) => {
+            if (error) return console.log(error);
+            console.log('old avatar (deleted): ', user.avatar);
+        });
+    }
+
     const updatedUser = await db.user.update({
         where: { id: currentUser.id as string },
         data: { avatar: null },

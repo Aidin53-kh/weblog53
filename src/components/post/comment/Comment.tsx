@@ -11,11 +11,11 @@ import { http } from '../../../services';
 import { Pages } from '../../auth/types';
 
 interface CommnetProps {
-    comment: IComment;
-    setComments: Dispatch<SetStateAction<IComment[]>>;
+    comment: any;
+    setComments: Dispatch<SetStateAction<any>>;
     postId: string;
     setCommentsCount: Dispatch<SetStateAction<number>>;
-    setCurrentScopComments?: Dispatch<SetStateAction<IComment[]>>;
+    setCurrentScopComments?: Dispatch<SetStateAction<any>>;
     setCurrentScopCommentsCount?: Dispatch<SetStateAction<number>>;
     setCurrentScopLoading?: Dispatch<SetStateAction<boolean>>;
     setShowCurrentReplysSectionScop?: Dispatch<SetStateAction<boolean>>;
@@ -41,22 +41,23 @@ export const Comment: React.FC<CommnetProps> = ({
     const [fetchReplysLoading, setFetchReplyLoading] = useState(false);
     const [showReplysSection, setShowReplysSection] = useState(false);
     const [replys, setReplys] = useState<IComment[]>([]);
-    const [replysCount, setReplysCount] = useState(comment.replys.length);
+    const [replysCount, setReplysCount] = useState(comment._count.replys);
 
     const [editMode, setEditMode] = useState(false);
     const [editCommentLoading, setEditCommentLoading] = useState(false);
 
     const [isCommentLiked, setIsCommentLiked] = useState(false);
-    const [likesCount, setLikesCount] = useState(comment.likes.length);
+    const [likesCount, setLikesCount] = useState(comment._count.likes);
     const [likeLoading, setLileLoading] = useState(false);
 
     const getReplys = async () => {
         setFetchReplyLoading(true);
         try {
-            const { data } = await http.get(`/comments/${postId}/${comment.id}`);
-            setReplys(data);
-            setReplysCount(data.length);
-            if (!data.length) setShowReplysSection(false);
+            const { data } = await http.get(`/api/replys/${comment.id}`);
+            console.log("data: replys: ", data.replys)
+            setReplys(data.replys);
+            setReplysCount(data.replys.length);
+            if (!data.replys.length) setShowReplysSection(false);
         } catch (error) {
             console.log(error);
             alert('error on get replys');
@@ -83,11 +84,11 @@ export const Comment: React.FC<CommnetProps> = ({
     const addReply = async (template: string, rtl: boolean) => {
         setAddReplyLoading(true);
         try {
-            const { data } = await http.post(`/comments/${postId}/${comment.id}`, { template, rtl });
+            const { data } = await http.post(`/api/replys/${comment.id}/replyToComment`, { template, rtl });
             setShowCommentEditor(false);
             getReplys();
-        } catch (error) {
-            console.log(error);
+        } catch (error: any) {
+            console.log(error.response);
             alert('error on add reply');
         } finally {
             setAddReplyLoading(false);
@@ -98,7 +99,7 @@ export const Comment: React.FC<CommnetProps> = ({
         setDeleteCommentLoading(true);
         try {
             const { data } = await http.delete(`/comments/${postId}/${comment.id}`);
-            setComments((comments) => comments.filter((comment) => comment.id !== data.id));
+            setComments((comments: any) => comments.filter((comment: any) => comment.id !== data.id));
             setCommentsCount((c) => c - 1);
         } catch (error: any) {
             console.log(error.response);
@@ -127,9 +128,9 @@ export const Comment: React.FC<CommnetProps> = ({
             const { data } = await http.patch(`/comments/${postId}/${comment.id}`, { template, rtl });
             console.log('comment edited: ', data);
             if (data.roll === 'Comment') {
-                setComments((comments) => {
+                setComments((comments: any) => {
                     const commentsList = [...comments];
-                    const commentIndex = comments.findIndex((c) => c.id === data.id);
+                    const commentIndex = comments.findIndex((c: any) => c.id === data.id);
                     commentsList[commentIndex] = data;
                     return commentsList;
                 });
@@ -165,7 +166,7 @@ export const Comment: React.FC<CommnetProps> = ({
     }, [showReplysSection]);
 
     useEffect(() => {
-        if (comment.likes.includes(String(user.id))) setIsCommentLiked(true);
+        if (comment.likes.some((like: any) => like.id === user.id)) setIsCommentLiked(true);
         else setIsCommentLiked(false);
     }, [user]);
 
@@ -182,10 +183,11 @@ export const Comment: React.FC<CommnetProps> = ({
             />
             <header className="flex items-center justify-between gap-5">
                 <div className="flex items-center gap-2">
-                    <Avatar src={comment.user.avatar && `http://localhost:3000/uploads/avatars/${comment.user.avatar}`} />
+                    <Avatar src={comment.author.avatar && `http://localhost:3000/uploads/avatars/${comment.author.avatar}`} />
                     <div>
                         <h4 className="text-sm">
-                            {comment.user.username} {!isEmpty(user) && user.id === comment.user && `(my comment)`}
+                            {comment.author.username}
+                            {!isEmpty(user) && user.id === comment.author.id && <span className="text-green-600 ml-2"> (You)</span>}
                         </h4>
                         <p className="text-gray-500 text-sm">{timeSince(comment.createdAt)}</p>
                     </div>

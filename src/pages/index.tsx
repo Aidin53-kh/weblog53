@@ -7,10 +7,9 @@ import Post from '../components/post/card/Post';
 import { http } from '../services';
 import { CircularProgress } from '@mui/material';
 import { Post as IPost } from '@prisma/client';
-import { useAppContext } from '../providers/AppProvider';
+
 
 const Home: NextPage = () => {
-    const { user } = useAppContext();
     const { data, error } = useSWR<GetAllPostsResponse>(`/api/posts`, (url) => http.get(url).then((res) => res.data));
 
     return (
@@ -43,8 +42,8 @@ const Home: NextPage = () => {
                             )}
                         </>
                     ) : (
-                        <div className="w-full text-center mt-44">
-                            <h2 className="text-2xl">faild to get posts</h2>
+                        <div className="bg-rose-50 rounded-lg px-3 my-40 py-6 text-center max-w-sm mx-auto">
+                            <h3 className="text-red-500 font-semibold">Oops! Request Faild ({error.response.status})</h3>
                         </div>
                     )}
                 </Container>
@@ -55,11 +54,13 @@ const Home: NextPage = () => {
 };
 
 export interface GetAllPostsResponse {
-    posts: (IPost & { author: {
-        username: string;
-        avatar: string | null;
-        id: string;
-    }})[]
+    posts: (IPost & {
+        author: {
+            username: string;
+            avatar: string | null;
+            id: string;
+        };
+    })[];
 }
 
 export default Home;

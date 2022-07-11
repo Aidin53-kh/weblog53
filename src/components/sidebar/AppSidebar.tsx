@@ -75,8 +75,8 @@ const AppSidebar: React.FC = () => {
                     )}
                 </>
             ) : (
-                <div className="w-full h-screen text-center mt-40">
-                    <h2 className="text-lg">faild to get users</h2>
+                <div className="bg-rose-50 rounded-lg px-3 my-20 py-6 text-center max-w-sm mx-auto">
+                    <h3 className="text-red-500 font-semibold">Oops! Request Faild ({error.response.status})</h3>
                 </div>
             )}
 

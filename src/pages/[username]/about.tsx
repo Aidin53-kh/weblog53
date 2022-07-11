@@ -45,7 +45,7 @@ const About = ({ user }: AboutProps) => {
                 template: editorRef.current?.textContent?.trim() ? editorRef.current?.innerHTML : '',
                 rtl,
             });
-
+console.log(data.about)
             setAboutTemplate(data.about.template);
             setEditMode(false);
         } catch (error) {
@@ -81,19 +81,19 @@ const About = ({ user }: AboutProps) => {
                                 ref={editorRef}
                                 rtl={rtl}
                                 onDirChange={(data) => setRtl(data.rtl)}
-                                defaultTemplate={user.about?.template}
+                                defaultTemplate={aboutTemplate}
                             />
                         </>
                     ) : (
                         <div>
-                            {user.about?.template ? (
+                            {aboutTemplate ? (
                                 <div>
                                     <div className="mb-8 mt-4 flex justify-end">
                                         <Button onClick={setEditorToEditMode}>Edit</Button>
                                     </div>
                                     <div
-                                        className={`${user.about.rtl ? 'rtl' : 'ltr'}`}
-                                        dangerouslySetInnerHTML={{ __html: user.about.template }}
+                                        className={`${rtl ? 'rtl' : 'ltr'}`}
+                                        dangerouslySetInnerHTML={{ __html: aboutTemplate }}
                                     ></div>
                                 </div>
                             ) : (
@@ -114,7 +114,7 @@ const About = ({ user }: AboutProps) => {
                     {!!aboutTemplate ? (
                         <div>
                             <div
-                                className={`my-12 ${user.about.rtl ? 'rtl' : 'ltr'}`}
+                                className={`my-12 ${rtl ? 'rtl' : 'ltr'}`}
                                 dangerouslySetInnerHTML={{ __html: aboutTemplate }}
                             ></div>
                         </div>
