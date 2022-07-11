@@ -7,29 +7,29 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         return res.status(405).json({ message: 'method not allowed' });
     }
 
-    const comments = await db.comment.findMany({
-        where: {
-            postId: req.query.postId as string,
-        },
-        orderBy: { 
-            createdAt: 'desc' 
-        },
-        include: {
-            _count: true,
-            likes: {
-                select: {
-                    id: true,
-                },
-            },
-            author: {
-                select: {
-                    username: true,
-                    avatar: true,
-                    id: true,
-                },
-            },
-        },
-    });
+    // const comments = await db.comment.findMany({
+    //     where: {
+    //         postId: req.query.postId as string,
+    //     },
+    //     orderBy: { 
+    //         createdAt: 'desc' 
+    //     },
+    //     include: {
+    //         _count: true,
+    //         likes: {
+    //             select: {
+    //                 id: true,
+    //             },
+    //         },
+    //         author: {
+    //             select: {
+    //                 username: true,
+    //                 avatar: true,
+    //                 id: true,
+    //             },
+    //         },
+    //     },
+    // });
 
-    res.status(200).json({ comments });
+    res.status(200).json({ comments: [] });
 };
